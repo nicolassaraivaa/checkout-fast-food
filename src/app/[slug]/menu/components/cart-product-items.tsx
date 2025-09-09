@@ -1,18 +1,20 @@
 import { Minus, Plus, TrashIcon } from "lucide-react";
 import Image from "next/image";
+import { useContext } from "react";
 
 import { Button } from "@/components/ui/button";
 import { formatCurrencyBRL } from "@/utils/formatCurrency";
 
-import { CartProduct } from "../context/cart";
+import { CartContext, CartProduct } from "../context/cart";
 
 interface CartItemsProps {
     product: CartProduct
 }
 
 const CartProductItems = ({ product }: CartItemsProps) => {
+    const { decreaseProductQuantity, increaseProductQuantity, removeProduct } = useContext(CartContext)
     return (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-10">
             {/* ESQUERDA */}
             <div className="flex items-center gap-4">
                 <div className="relative h-20 w-20 bg-gray-100 rounded-xl">
@@ -31,6 +33,7 @@ const CartProductItems = ({ product }: CartItemsProps) => {
                         <Button
                             variant="outline"
                             className="h-7 w-7 rounded-lg"
+                            onClick={() => decreaseProductQuantity(product.id)}
                         >
                             <Minus />
                         </Button>
@@ -38,6 +41,7 @@ const CartProductItems = ({ product }: CartItemsProps) => {
                         <Button
                             variant="destructive"
                             className="h-7 w-7 rounded-lg"
+                            onClick={() => increaseProductQuantity(product.id)}
                         >
                             <Plus />
                         </Button>
@@ -45,8 +49,9 @@ const CartProductItems = ({ product }: CartItemsProps) => {
                 </div>
             </div>
             {/* BOTÃO DELETAR */}
-            <Button className="h-7 w-7 rounded-lg" variant='outline'>    
-                <TrashIcon/>
+            <Button className="h-7 w-7 rounded-lg" variant='outline' onClick={() => removeProduct(product.id)}
+            >
+                <TrashIcon />
             </Button>
         </div>
     );
