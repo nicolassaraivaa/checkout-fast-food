@@ -3,24 +3,25 @@
 import { Product } from "@prisma/client"
 import { createContext, ReactNode, useState } from "react"
 
-interface CartProduct extends Product {
+interface CartProduct extends Pick<Product, "id" | "name" | "imageUrl" | "price"> {
     quantity: number
 }
 
 export interface CartContextProps {
     isOpen: boolean
     products: CartProduct[]
-    toggleCart: () => void 
+    toggleCart: () => void
+    addProduct: (product: CartProduct) => void
 }
 
-export const CartContext  = createContext<CartContextProps>({
+export const CartContext = createContext<CartContextProps>({
     isOpen: false,
-    products: [], 
-    toggleCart: () => {}
+    products: [],
+    toggleCart: () => { },
+    addProduct: () => {}
 })
 
-export const CartProvider = ({children}:{children:ReactNode}) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [products, setProducts] = useState<CartProduct[]>([])
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -28,12 +29,17 @@ export const CartProvider = ({children}:{children:ReactNode}) => {
         setIsOpen((prev) => !prev)
     }
 
+    const addProduct = (product: CartProduct) => {
+        setProducts((prev) => [...prev, product])
+    }
+
     return (
-        <CartContext.Provider 
+        <CartContext.Provider
             value={{
                 isOpen,
-                products, 
-                toggleCart
+                products,
+                toggleCart,
+                addProduct
             }}>
             {children}
         </CartContext.Provider>
