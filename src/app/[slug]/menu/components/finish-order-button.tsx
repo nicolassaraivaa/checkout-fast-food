@@ -2,8 +2,13 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { ConsumptionMethod } from "@prisma/client";
+import { Loader2Icon } from "lucide-react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useContext, useState, useTransition } from "react";
 import { useForm } from 'react-hook-form';
-import {PatternFormat} from 'react-number-format'
+import { PatternFormat } from 'react-number-format'
+import { toast } from "sonner";
 import { z } from 'zod'
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +26,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { isValidCpf } from '@/utils/cpf';
 
+import { createOrder } from "../actions/create-order";
+import { CartContext } from "../context/cart";
+
 const formSchema = z.object({
     name: z.string().trim().min(1, {
         message: 'O nome é obrigatório!'
@@ -33,6 +41,12 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 const FinishOrderButton = () => {
+    const [finishOrderDialogIsOpen, setFinishOrderDialogIsOpen] = useState (false);
+
+    const { slug } = useParams<{ slug: string }>()
+    const searchParams = useSearchParams()
+    const { products } = useContext(CartContext)
+    const [isPeding, startTransaction] = useTransition()
 
     const form = useForm<FormSchema>({
         resolver: zodResolver(formSchema),
@@ -43,14 +57,29 @@ const FinishOrderButton = () => {
         shouldUnregister: true
     })
 
-    const onSubmit = (data: FormSchema) => {
-        console.log(data)
+    const onSubmit = async (data: FormSchema) => {
+        try {
+            const consumptionMethod = searchParams.get("consumptionMethod") as ConsumptionMethod
+           startTransaction (async  () => {
+             await createOrder({
+                consumptionMethod,
+                customerCpf: data.cpf,
+                customername: data.name,
+                products,
+                slug
+            })
+            setFinishOrderDialogIsOpen(false)
+            toast.success("Pedido finalizado com sucesso!")
+           })
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     return (
-        <Drawer>
+        <Drawer open={finishOrderDialogIsOpen}  onOpenChange={setFinishOrderDialogIsOpen}>
             <DrawerTrigger asChild>
-                <Button className="w-full rounded-full">
+                <Button className="w-full rounded-full" onClick={() => setFinishOrderDialogIsOpen(true)}>
                     Finalizar pedidos
                 </Button>
             </DrawerTrigger>
@@ -84,7 +113,7 @@ const FinishOrderButton = () => {
                                     <FormItem>
                                         <FormLabel>Seu CPF</FormLabel>
                                         <FormControl>
-                                            <PatternFormat 
+                                            <PatternFormat
                                                 placeholder="Digite seu CPF..."
                                                 format="###.###.###-##"
                                                 customInput={Input}
@@ -96,15 +125,17 @@ const FinishOrderButton = () => {
                                 )}
                             />
                             <DrawerFooter>
-                                <Button 
+                                <Button
                                     type="submit"
                                     variant="destructive"
                                     className="rounded-full"
+                                    disabled={isPeding}
                                 >
+                                    {isPeding && <Loader2Icon className="animate-spin"/>}
                                     Finalizar
                                 </Button>
                                 <DrawerClose asChild>
-                                    <Button 
+                                    <Button
                                         variant="outline"
                                         className="w-full rounded-full"
                                     >
