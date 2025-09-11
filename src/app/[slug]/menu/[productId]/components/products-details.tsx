@@ -3,7 +3,9 @@
 import { Prisma } from "@prisma/client";
 import { ChefHatIcon, Minus, Plus } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -27,8 +29,9 @@ interface ProductDetailsProps {
 }
 
 const ProductDatails = ({ product }: ProductDetailsProps) => {
-    const {toggleCart, addProduct } = useContext(CartContext)
+    const { addProduct } = useContext(CartContext)
     const [quantity, setQuantity] = useState<number>(1)
+    const navigate = useRouter()
 
     const handleIncreaseQuantity = () => {
         setQuantity((prev) => prev + 1)
@@ -48,7 +51,10 @@ const ProductDatails = ({ product }: ProductDetailsProps) => {
             ...product,
             quantity: quantity
         })
-        toggleCart()
+        navigate.back()
+        toast.success("Pedido(s) adicionado(s) á sacola!", {
+            duration: 1500
+        })
     }
 
     return (
@@ -134,7 +140,7 @@ const ProductDatails = ({ product }: ProductDetailsProps) => {
                 </Button>
 
             </div>
-            <CartSheet/>
+            <CartSheet />
         </>
     );
 }

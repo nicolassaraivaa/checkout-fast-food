@@ -37,7 +37,7 @@ const CpfForm = () => {
     })
 
     const onSubmit = async (data: FormSchema) => {
-        navigate.push(`${pathName}/?cpf=${removeCpfPunctuation(data.cpf)}`)
+        navigate.replace(`${pathName}/?cpf=${removeCpfPunctuation(data.cpf)}`)
     }
 
     const handleCancel = async () => {
