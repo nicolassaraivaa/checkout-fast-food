@@ -65,9 +65,9 @@ const OrderList = ({ orders }: OrderListProps) => {
                                     fill
                                 />
                             </div>
-                            <div className="flex justify-items-center">
+                            <div className="flex items-center w-full justify-between">
                                 <p className="text-sm font-semibold">{order.restaurant.name}</p>
-                                <p className="text-sm font-medium">{order.createdAt.toLocaleDateString("pt-BR")}</p>
+                                <p className="text-sm font-medium text-muted-foreground">{order.createdAt.toLocaleDateString("pt-BR")}</p>
                             </div>
                         </div>
                         <Separator />
