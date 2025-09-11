@@ -14,7 +14,7 @@ const GetProducts = ({ products }: ProductsProps) => {
     const searchParams = useSearchParams()
     const consumptionMethod = searchParams.get("consumptionMethod")
     return (
-        <div className="space-y-3 px-5">
+        <div className="space-y-3 px-5 pb-14">
             {products.map(product => (
                 <Link
                     href={`/${slug}/menu/${product.id}?consumptionMethod=${consumptionMethod}`}

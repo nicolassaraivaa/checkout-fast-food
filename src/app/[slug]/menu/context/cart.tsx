@@ -10,6 +10,7 @@ export interface CartProduct extends Pick<Product, "id" | "name" | "imageUrl" | 
 export interface CartContextProps {
     isOpen: boolean
     total: number
+    totalQuantity: number
     products: CartProduct[]
     toggleCart: () => void
     addProduct: (product: CartProduct) => void
@@ -20,6 +21,7 @@ export interface CartContextProps {
 
 export const CartContext = createContext<CartContextProps>({
     isOpen: false,
+    totalQuantity: 0,
     total: 0,
     products: [],
     toggleCart: () => { },
@@ -36,6 +38,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const total = products.reduce((acc, product) => {
         return acc + product.price * product.quantity
+    }, 0)
+
+    const totalQuantity = products.reduce((acc, product) => {
+        return acc + product.quantity
     }, 0)
 
     const toggleCart = () => {
@@ -107,7 +113,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 addProduct,
                 decreaseProductQuantity,
                 increaseProductQuantity,
-                removeProduct
+                removeProduct, 
+                totalQuantity
             }}>
             {children}
         </CartContext.Provider>
