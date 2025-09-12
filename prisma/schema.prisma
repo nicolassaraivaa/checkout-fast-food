@@ -81,6 +81,8 @@ model OrderProduct {
 
 enum OrderStatus {
   PEDING
+  PAYMENT_CONFIRMED
+  PAYMENT_FAILED
   IN_PREPARATION
   FINISHED
 }

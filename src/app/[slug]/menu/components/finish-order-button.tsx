@@ -3,12 +3,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ConsumptionMethod } from "@prisma/client";
+import { loadStripe } from '@stripe/stripe-js'
 import { Loader2Icon } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useContext, useState, useTransition } from "react";
 import { useForm } from 'react-hook-form';
 import { PatternFormat } from 'react-number-format'
-import { toast } from "sonner";
 import { z } from 'zod'
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { isValidCpf } from '@/utils/cpf';
 
+import { createStripeCheckout } from "../actions/create_strip_checkout";
 import { createOrder } from "../actions/create-order";
 import { CartContext } from "../context/cart";
 
@@ -41,7 +42,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 const FinishOrderButton = () => {
-    const [finishOrderDialogIsOpen, setFinishOrderDialogIsOpen] = useState (false);
+    const [finishOrderDialogIsOpen, setFinishOrderDialogIsOpen] = useState(false);
 
     const { slug } = useParams<{ slug: string }>()
     const searchParams = useSearchParams()
@@ -60,24 +61,36 @@ const FinishOrderButton = () => {
     const onSubmit = async (data: FormSchema) => {
         try {
             const consumptionMethod = searchParams.get("consumptionMethod") as ConsumptionMethod
-           startTransaction (async  () => {
-             await createOrder({
-                consumptionMethod,
-                customerCpf: data.cpf,
-                customername: data.name,
-                products,
-                slug
+            startTransaction(async () => {
+                const order = await createOrder({
+                    consumptionMethod,
+                    customerCpf: data.cpf,
+                    customername: data.name,
+                    products,
+                    slug
+                })
+                const { sessionId } = await createStripeCheckout({
+                    products,
+                    orderId: order.id,
+                    slug,
+                    cpf: data.cpf
+                })
+
+                if (!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY) return
+
+                const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY)
+
+                stripe?.redirectToCheckout({
+                    sessionId: sessionId
+                })
             })
-            setFinishOrderDialogIsOpen(false)
-            toast.success("Pedido finalizado com sucesso!")
-           })
         } catch (error) {
             console.error(error)
         }
     }
 
     return (
-        <Drawer open={finishOrderDialogIsOpen}  onOpenChange={setFinishOrderDialogIsOpen}>
+        <Drawer open={finishOrderDialogIsOpen} onOpenChange={setFinishOrderDialogIsOpen}>
             <DrawerTrigger asChild>
                 <Button className="w-full rounded-full" onClick={() => setFinishOrderDialogIsOpen(true)}>
                     Finalizar pedidos
@@ -131,7 +144,7 @@ const FinishOrderButton = () => {
                                     className="rounded-full"
                                     disabled={isPeding}
                                 >
-                                    {isPeding && <Loader2Icon className="animate-spin"/>}
+                                    {isPeding && <Loader2Icon className="animate-spin" />}
                                     Finalizar
                                 </Button>
                                 <DrawerClose asChild>

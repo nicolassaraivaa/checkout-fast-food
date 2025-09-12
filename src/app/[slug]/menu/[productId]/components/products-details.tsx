@@ -53,7 +53,7 @@ const ProductDatails = ({ product }: ProductDetailsProps) => {
         })
         navigate.back()
         toast.success("Pedido(s) adicionado(s) á sacola!", {
-            duration: 1500
+            duration: 1000
         })
     }
 
