@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛒 Checkout Restaurant
 
-## Getting Started
+Um sistema de **self checkout** desenvolvido em **Next.js** para gerenciar pedidos, integrar pagamentos via **Stripe** e organizar o fluxo de consumo em restaurantes.
 
-First, run the development server:
+## 🚀 Tecnologias utilizadas
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Next.js 15](https://nextjs.org/) – Framework React para aplicações web modernas
+- [React](https://react.dev/) – Biblioteca para construção de interfaces
+- [TypeScript](https://www.typescriptlang.org/) – Tipagem estática
+- [Prisma ORM](https://www.prisma.io/) – ORM para banco de dados relacional
+- [PostgreSQL](https://www.postgresql.org/) – Banco de dados
+- [TailwindCSS](https://tailwindcss.com/) – Estilização
+- [Radix UI](https://www.radix-ui.com/) – Componentes acessíveis
+- [React Hook Form](https://react-hook-form.com/) – Formulários 
+- [Zod](https://zod.dev/) – Validação de dados
+- [Stripe](https://stripe.com/) – Integração de pagamentos
+- [Sonner](https://sonner.emilkowal.ski/) – Notificações
+- [Lucide React](https://lucide.dev/) – Ícones modernos
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📌 Funcionalidades
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Cadastro e listagem de produtos
+- Criação de pedidos com múltiplos produtos
+- Associação de pedidos a clientes via **CPF**
+- Escolha do método de consumo (ex: local, entrega)
+- Redirecionamento para página de pedidos
+- Integração com **Stripe** para checkout de pagamento
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📂 Estrutura de scripts
 
-## Learn More
+| Script                | Descrição |
+|-----------------------|-----------|
+| `npm run dev`         | Inicia o servidor em modo desenvolvimento |
+| `npm run build`       | Cria a build de produção |
+| `npm run start`       | Inicia a aplicação em produção |
+| `npm run lint`        | Executa o linter |
+| `npm run postinstall` | Gera o cliente do Prisma automaticamente |
+| `npx prisma migrate dev` | Executa as migrations no banco |
+| `npx prisma studio`   | Abre o Prisma Studio para visualizar os dados |
+| `npm run seed`        | Executa o seeder de dados (`prisma/seed.ts`) |
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Como rodar o projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone o repositório:
+   ```bash
+   gh repo clone nicolassaraivaa/checkout-fast-food
+   
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Instale as dependências:
+   ```bash
+   npm install
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Configure as variáveis de ambiente (.env):
+   ```bash
+   DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
+   STRIPE_SECRET_KEY="sua_chave_stripe"
+   NEXT_PUBLIC_STRIPE_PUBLIC_KEY="sua_chave_publica_stripe"
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   
+4. Rode as migrations do Prisma:
+   ```bash
+   npx prisma migrate dev
+
+   
+5. (Opcional) Popule o banco com dados iniciais:
+   ```bash
+   npm run seed
+
+
+6. Inicie o servidor:
+   ```bash
+   npm run dev
+
+
+
+
